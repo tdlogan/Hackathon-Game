@@ -7,11 +7,7 @@ body {
 	background-color: #000;
 	height: 100%;
 	width: 100%;
-<<<<<<< HEAD
 	color:white;
-=======
-	color:#2d95ff;
->>>>>>> ad4f305ffd797c654640433c676d21721a37479a
 
 }
 
@@ -21,32 +17,18 @@ h1 {
 	font-weight: 300;
 	letter-spacing: 0.8em;
 	text-align: center;
-<<<<<<< HEAD
 	margin: 2em;
 	text-shadow: 5px 5px 5px #fff000;
-=======
-	
-	text-shadow: 5px 5px 5px #fff;
->>>>>>> ad4f305ffd797c654640433c676d21721a37479a
 }
 
-.gameSpace {
+.content {
 	background: url("images/background.png");
-<<<<<<< HEAD
 	height: 100%;
 	width: 100%;
 	width: 80%;
 	height: 600px;
 	margin: 5% 10% 0px 10%;
 
-=======
-	height: 500px;
-	width: 800px;
-	width: 80%;
-	height: 600px;
-	margin-left: auto;
-	margin-right: auto;
->>>>>>> ad4f305ffd797c654640433c676d21721a37479a
 }
 
 .scoreboard {
@@ -60,18 +42,5 @@ h1 {
 	margin: 0 7% 0 7%;
 }
 svg{
-<<<<<<< HEAD
 	box-shadow: 0 0 20px 3px #000 inset;
-}
-
-.gameSpace {
-  position : relative
-=======
-
-	box-shadow: 0 0 20px 3px #000 inset;
->>>>>>> ad4f305ffd797c654640433c676d21721a37479a
-}
-
-.collisionCircle {
-  fill : 'red'
 }
