@@ -1,0 +1,51 @@
+/* your beautiful css styling goes here! */
+
+/* Note: an asteroid image is included in this repo.
+Feel free to use it if you like. */
+body {
+	
+	background-color: #000;
+	height: 100%;
+	width: 100%;
+	color:#2d95ff;
+
+}
+
+h1 {
+	font-family: calibri;
+	font-size: 40px;
+	font-weight: 300;
+	letter-spacing: 0.8em;
+	text-align: center;
+	
+	text-shadow: 5px 5px 5px #fff;
+}
+
+.gameSpace {
+	background: url("images/background.png");
+	height: 500px;
+	width: 800px;
+	width: 80%;
+	height: 600px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.scoreboard {
+	margin: 0 10%;
+	text-align: center;
+}
+
+.scoreboard div{
+	display: inline-block;
+	text-align: center;
+	margin: 0 7% 0 7%;
+}
+svg{
+
+	box-shadow: 0 0 20px 3px #000 inset;
+}
+
+.collisionCircle {
+  fill : 'red'
+}
