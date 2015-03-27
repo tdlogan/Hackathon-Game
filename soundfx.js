@@ -11,7 +11,7 @@ function init() {
     ];
     
     //Loading the sounds.
-    createjs.Sound.addEventListener('fileload', handlLoad);
+    createjs.Sound.addEventListener('fileload', handleLoad);
     createjs.Sound.registerSounds(sounds, audioPath);
 
 };

@@ -1,8 +1,8 @@
 // start slingin' some d3 here.
 
 var settings = {
-  height : 300,
-  width : 300,
+  height : 500,
+  width : 800,
   enemyR : 7,
   playerR : 25,
   bulletRX: 7,
@@ -86,7 +86,7 @@ var moveEnemies = function() {
 
   //Transition all enemies to a new random location
   svg.selectAll('.enemy').data(enemies)
-     .transition().duration(enemyMovementSpeed)
+     .transition().duration(enemyMovementSpeed).ease('linear')
      .attr('cx', function(d, i){
         // startX = d.x;
         d.x = Math.floor(Math.random() * ((settings.width - settings.enemyR) - 50) + 50);
@@ -111,63 +111,7 @@ var moveEnemies = function() {
      });
           updateScore(collided);
 }
-//Compare the hitboxes of the player and an enemy to check for a collision
-var checkCollision = function(targetX, targetY){
-  var player = cannonArray[0];
-  var playerX = player.x,
-      playerY = player.y;
 
-  //get distances between objects
-  var dx = targetX - player.x;
-  var dy = targetY - player.y;
-  var distance = Math.sqrt(dx * dx + dy * dy);
-
-  //check if the objects are close enough to be touching
-  if (distance <= settings.playerR + settings.enemyR){
-    if (playerDead === false){
-      collisions++;
-      screenShake();
-      killPlayer();
-    }
-    return true;
-  } else {
-    return false;
-  }
-
-}
-
-// var screenShake = function() {
-//   if (playerDead === false){
-//     gameScreen.transition().duration(50).style({
-//       'top' : '7px',
-//       'left' : '7px'
-//     }).transition().duration(50).style({
-//       'top' : '0px',
-//       'left' : '0px'
-//     }).transition().duration(50).style({
-//       'top' : '7px',
-//       'left' : '7px'
-//     }).transition().duration(50).style({
-//       'top' : '-7px',
-//       'left' : '-7px'
-//     }).transition().duration(50).style({
-//       'top' : '7px',
-//       'left' : '7px'
-//     }).transition().duration(50).style({
-//   'top' : '-7px',
-//       'left' : '-7px'
-//     });
-//     //Create explosion circle at player coordinates
-//     var explosionCircle = svg.selectAll('.collisionCircle').data([1]).enter()
-//       .append('circle').attr('class', '.collisionCircle')
-//       .attr('cx', cannonArray[0].x).attr('cy', cannonArray[0].y)
-//       .attr('r', settings.playerR).attr('fill', 'red');
-
-//     explosionCircle.transition().duration(350)
-//       .style('opacity', 0).attr('r', 75).attr('fill', 'orange').remove();
-
-//   }
-// }
 
 var killPlayer = function(){
   svg.select('.player').data(cannonArray)
@@ -230,8 +174,41 @@ var printScore = function(){
   var playerDead = false;
 
 
+function init() {
+
+    //Adding sounds to the file.
+    var audioPath = 'Sounds/';
+    var sounds = [
+      {id:"cannon", src:"cannon.mp3"},
+      {id:"hit", src:"hit.mp3"},
+      {id:"aim", src:"aim.mp3"}
+    ];
+    
+    //Loading the sounds.
+    createjs.Sound.addEventListener('fileload', handleLoad);
+    createjs.Sound.registerSounds(sounds, audioPath);
+
+};
+
+function handleLoad(event) {
+    createjs.Sound.play("cannon");
+    createjs.Sound.play("hit");
+}
+
 //----MAIN GAME FUNCTION----
 var startGame = function() {
+// //Adding sounds to the file.
+//     var audioPath = 'Sounds/';
+//     var sounds = [
+//       {id:"cannon", src:"cannon.mp3"},
+//       {id:"hit", src:"hit.mp3"},
+//       {id:"aim", src:"aim.mp3"}
+//     ];
+    
+//     //Loading the sounds.
+//     createjs.Sound.addEventListener('fileload', handleLoad);
+//     createjs.Sound.registerSounds(sounds, audioPath);
+
   //add event listener for clicking and dragging the player
 
   var mouseCoordinates = [0, 0];     //d3 coordinates are stored in an array, [x, y]
@@ -243,18 +220,7 @@ var startGame = function() {
   setInterval(function(){ moveEnemies(); }, timeBetweenEnemyMoves);
   setInterval(function(){ printScore(); }, 100);
 
-  //Event listener that locks the player to the mouse position
-  // d3.select('.gameSpace').data(cannonArray).on('mousemove', function(d) {
-  //   mouseCoordinates = d3.mouse(this);
-  //   if (playerDead === false){
-  //     player.x = mouseCoordinates[0];
-  //     player.y = mouseCoordinates[1];
-  //     d3.selectAll('.player').attr('cx', player.x).attr('cy', player.y);
-  //   }
-  // });
-  // d3.selectAll('.player').data(cannonArray).on('click', function(d){
-  //     playerDead = false;
-  // });
+ 
   d3.select('body').on('click', function(d){
     var mouseCoordinates = d3.mouse(this);
     mouseX = mouseCoordinates[0];
@@ -262,6 +228,7 @@ var startGame = function() {
     //shoot bullet in direction of mouse
     fireBullet(mouseX, mouseY);
     moveBullets(mouseX, mouseY);
+    createjs.Sound.play("cannon");
   });
 }
 
@@ -282,17 +249,37 @@ var fireBullet = function(targetX, targetY){
 }
 
 var moveBullets = function(targetX, targetY){
-
-
   d3.select('body').selectAll('.bullet').data(bulletArray).transition().duration(300).ease('linear')
     .attr("cx", targetX)
     .attr("cy", targetY)
-    .remove().each('end', function(){
-      screenShake();
+    .remove().each('end', function(d){
+      d.x = targetX;
+      d.y = targetY;
+      screenShake(d);
+      checkCollision(targetX, targetY);
     });
 }
 
-var screenShake = function() {
+//Compare the hitboxes of the player and an enemy to check for a collision
+var checkCollision = function(targetX, targetY){
+  var player = cannonArray[0];
+  var playerX = player.x,
+      playerY = player.y;
+
+  //get distances between objects
+  var dx = targetX - player.x;
+  var dy = targetY - player.y;
+  var distance = Math.sqrt(dx * dx + dy * dy);
+
+  //check if the objects are close enough to be touching
+  if (distance <= settings.playerR + settings.enemyR){
+    return true;
+  } else {
+    return false;
+  }
+
+}
+var screenShake = function(d) {
   //if (playerDead === false){
     gameScreen.transition().duration(50).style({
       'top' : '7px',
@@ -316,7 +303,7 @@ var screenShake = function() {
     //Create explosion circle at player coordinates
     var explosionCircle = svg.selectAll('.collisionCircle').data([1]).enter()
       .append('circle').attr('class', '.collisionCircle')
-      .attr('cx', bulletArray[0].x).attr('cy', bulletArray[0].y)
+      .attr('cx', d.x).attr('cy', d.y)
       .attr('r', settings.playerR).attr('fill', 'red');
 
     explosionCircle.transition().duration(350)
