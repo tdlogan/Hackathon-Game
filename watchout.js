@@ -49,6 +49,11 @@ var populateEnemies = function(){
       .attr("cx", function(d, i){ return d.x; })
       .attr("cy", function(d, i){ return d.y; })
       .attr('fill', 'black');
+<<<<<<< HEAD
+=======
+      //.attr('fill', 'url(#background)');
+
+>>>>>>> ad4f305ffd797c654640433c676d21721a37479a
 
   //Drop enemies onto play area
   svg.selectAll('.enemy').data(enemies)
