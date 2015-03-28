@@ -3,12 +3,10 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 body {
-	
 	background-color: #000;
 	height: 100%;
 	width: 100%;
-	color:white;
-
+	color:#2d95ff;
 }
 
 h1 {
@@ -17,36 +15,25 @@ h1 {
 	font-weight: 300;
 	letter-spacing: 0.8em;
 	text-align: center;
-	margin: 2em;
-	text-shadow: 5px 5px 5px #fff000;
+	text-shadow: 5px 5px 5px #fff;
 }
 
 .gameSpace {
 	background: url("images/background.png");
-	height: 100%;
-	width: 100%;
-	width: 80%;
-	height: 600px;
-	margin: 5% 10% 0px 10%;
-
+	margin-left: 15px;
+	margin-right: auto;
+	position: relative;
 }
 
 .scoreboard {
-	margin: 0 10%;
+	margin-left: 15px;
 	text-align: center;
+	width: 800px;
 }
 
 .scoreboard div{
 	display: inline-block;
 	text-align: center;
-	margin: 0 7% 0 7%;
-}
-svg{
-	box-shadow: 0 0 20px 3px #000 inset;
-}
-
-.gameSpace {
-  position : relative
 }
 
 .collisionCircle {
