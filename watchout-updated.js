@@ -130,6 +130,8 @@ var checkCollision = function(){
       console.log('hit');
     }
   }
+
+  killEnemies();
 }
 
 var killEnemies = function(){
@@ -215,7 +217,6 @@ var moveBullets = function(targetX, targetY){
     .remove().each('end', function(d, i){
       if(i === bulletArray.length - 1){
         checkCollision();
-        killEnemies();
         screenShake(d);
       }
     });
