@@ -6,7 +6,7 @@ var settings = {
   cannonR : 25,
   bulletRX: 7,
   bulletRY: 14,
-  numEnemies : 1,
+  numEnemies : 10,
   enemyMovementSpeed: 1000
 }
 
@@ -14,6 +14,7 @@ var Enemy = function(x, y){
   this.x = x;
   this.y = y;
   this.color = "red";
+  this.isDead = false;
 }
 
 var Cannon = function(x, y){
@@ -22,11 +23,11 @@ var Cannon = function(x, y){
   this.color = "red";
 }
 
- function Bullet(x, y, targetx, targety) {
-    this.x = x;
-    this.y = y;
-    this.color = "red";
-  }
+function Bullet(x, y, targetx, targety) {
+  this.x = x;
+  this.y = y;
+  this.color = "red";
+}
 
 //Loop through number of enemies and populate a new enemy at a random x and y coordinate
 var populateEnemies = function(){
@@ -44,11 +45,11 @@ var populateEnemies = function(){
       y *= -1;
     }
     var newEnemy = new Enemy(x, y);
-    enemies.push(newEnemy);  //push new enemies into array in order to easily access their data in D3
+    enemyArray.push(newEnemy);  //push new enemies into array in order to easily access their data in D3
   }
 
   //Paint all enemies on screen as SVG circles
-  svg.selectAll('circle').data(enemies).enter()
+  svg.selectAll('circle').data(enemyArray).enter()
       .append('circle')
       .attr('class', 'enemy')
       .attr("r", settings.enemyR + "px")
@@ -57,7 +58,7 @@ var populateEnemies = function(){
       .attr('fill', 'black');
 
   //Drop enemies onto play area
-  svg.selectAll('.enemy').data(enemies)
+  svg.selectAll('.enemy').data(enemyArray)
       .transition().ease('elastic').duration(1500)
       .attr("cy", function(d, i){
         d.y = Math.floor(Math.random() * (settings.height - 50) + 50);
@@ -89,38 +90,62 @@ var populateCannon = function(){
 var moveEnemies = function() {
 
   //Transition all enemies to a new random location
-  svg.selectAll('.enemy').data(enemies)
+  svg.selectAll('.enemy').data(enemyArray)
      .transition().duration(settings.enemyMovementSpeed).ease('linear')
      .attr('cx', function(d, i){
-        // startX = d.x;
-        d.x = Math.floor(Math.random() * ((settings.width - settings.enemyR) - 50) + 50);
-        return d.x;
+        if(d.isDead === false){
+          d.x = Math.floor(Math.random() * ((settings.width - settings.enemyR) - 50) + 50);
+        }
+          return d.x;
       })
      .attr('cy', function(d, i){
-        // startY = d.y;
-        d.y = Math.floor(Math.random() * ((settings.height - 100) - 50) + 50);
-        return d.y;
+        if(d.isDead === false){
+          d.y = Math.floor(Math.random() * ((settings.height - 100) - 50) + 50);
+        }
+          return d.y;
       })
      .tween('Collision Check', function(d, i){  //Run checkCollision at each step in the transition to register collisions while transitioning
         return function(t) {  //t is the percentage of the way through the transition
-          d.x = d3.select(this).attr('cx');
-          d.y = d3.select(this).attr('cy');
+          if(d.isDead === false){
+            d.x = d3.select(this).attr('cx');
+            d.y = d3.select(this).attr('cy');
+          }
      }
      });
 }
 
-var checkCollision = function(enemyX, enemyY){
+var checkCollision = function(){
   //get distances between objects
-  var dx = enemyX - currentBullet.x;
-  var dy = enemyY - currentBullet.y;
-  var distance = Math.sqrt(dx * dx + dy * dy);
+  for (var i = 0; i < enemyArray.length; i++){
+    var dx = currentBullet.x - enemyArray[i].x;
+    var dy = currentBullet.y - enemyArray[i].y;
+    var distance = Math.sqrt(dx * dx + dy * dy);
 
-  //check if the objects are close enough to be touching
-  if (distance <= settings.cannonR + settings.enemyR){
-    return true;
-  } else {
-    return false;
+    //check if the objects are close enough to be touching
+    if (distance <= 45 + settings.enemyR){
+      //set all enemies within range to dead
+      enemyArray[i].isDead = true;
+      deadArray.push(enemyArray[i]);
+      console.log('x: ', enemyArray[i].x, ', y: ', enemyArray[i].y);
+      console.log('hit');
+    }
   }
+}
+
+var killEnemies = function(){
+  svg.selectAll('.enemy').data(enemyArray)
+    .classed('dead', function(d){
+      if(d.isDead === true){
+        d.y = settings.height - settings.enemyR;
+        return true;
+      } else {
+        return false;
+      }
+    });
+  console.log(enemyArray);
+
+  svg.selectAll('.dead').data(deadArray).transition().duration(1000).ease('bounce')
+    .attr('cy', function(d){ return d.y; });
 }
 
 //----GLOBAL VARIABLES----
@@ -129,9 +154,10 @@ var svg = d3.select('svg').attr("height", settings.height).attr("width", setting
 var gameScreen = d3.select('.gameSpace').style("height", settings.height + "px").style("width", settings.width + "px");
 
 
-var enemies = [];
+var enemyArray = [];
 var cannonArray = [];  //d3 accepts arrays as data arguments so push the player object into an array even though there is only one of them
 var bulletArray = [];
+var deadArray = [];
 var currentBullet;
 
 //----MAIN GAME FUNCTION----
@@ -184,14 +210,14 @@ var moveBullets = function(targetX, targetY){
       return function(t){
         d.x = d3.select(this).attr('cx');
         d.y = d3.select(this).attr('cy');
-        console.log(currentBullet.x, ',', currentBullet.y);
       }
     })
-    .remove().each('end', function(d){
-      if(checkCollision(d.x, d.y) === true){
-        console.log('hit!');
+    .remove().each('end', function(d, i){
+      if(i === bulletArray.length - 1){
+        checkCollision();
+        killEnemies();
+        screenShake(d);
       }
-      screenShake(d);
     });
 }
 
