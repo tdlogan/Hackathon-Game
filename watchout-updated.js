@@ -23,7 +23,7 @@ var Cannon = function(x, y){
   this.color = "red";
 }
 
-function Bullet(x, y, targetx, targety) {
+function Bullet(x, y) {
   this.x = x;
   this.y = y;
   this.color = "red";
@@ -51,7 +51,7 @@ var populateEnemies = function(){
   //Paint all enemies on screen as SVG circles
   svg.selectAll('circle').data(enemyArray).enter()
       .append('circle')
-      .attr('class', 'enemy')
+      .attr('class', 'enemy alive')
       .attr("r", settings.enemyR + "px")
       .attr("cx", function(d, i){ return d.x; })
       .attr("cy", function(d, i){ return d.y; })
@@ -90,26 +90,26 @@ var populateCannon = function(){
 var moveEnemies = function() {
 
   //Transition all enemies to a new random location
-  svg.selectAll('.enemy').data(enemyArray)
+  svg.selectAll('.enemy').filter('.alive').data(enemyArray)
      .transition().duration(settings.enemyMovementSpeed).ease('linear')
      .attr('cx', function(d, i){
-        if(d.isDead === false){
+        //if(d.isDead === false){
           d.x = Math.floor(Math.random() * ((settings.width - settings.enemyR) - 50) + 50);
-        }
+        //}
           return d.x;
       })
      .attr('cy', function(d, i){
-        if(d.isDead === false){
+        //if(d.isDead === false){
           d.y = Math.floor(Math.random() * ((settings.height - 100) - 50) + 50);
-        }
+        //}
           return d.y;
       })
-     .tween('Collision Check', function(d, i){  //Run checkCollision at each step in the transition to register collisions while transitioning
+     .tween('Set x & y properties', function(d, i){  //Run checkCollision at each step in the transition to register collisions while transitioning
         return function(t) {  //t is the percentage of the way through the transition
-          if(d.isDead === false){
+          //if(d.isDead === false){
             d.x = d3.select(this).attr('cx');
             d.y = d3.select(this).attr('cy');
-          }
+          //}
      }
      });
 }
@@ -126,8 +126,6 @@ var checkCollision = function(){
       //set all enemies within range to dead
       enemyArray[i].isDead = true;
       deadArray.push(enemyArray[i]);
-      console.log('x: ', enemyArray[i].x, ', y: ', enemyArray[i].y);
-      console.log('hit');
     }
   }
 
@@ -135,19 +133,34 @@ var checkCollision = function(){
 }
 
 var killEnemies = function(){
+
   svg.selectAll('.enemy').data(enemyArray)
-    .classed('dead', function(d){
-      if(d.isDead === true){
-        d.y = settings.height - settings.enemyR;
+    .classed('alive', function(d){
+      //if enemy is dead, give it class .dead and set y coordinates to bottom of screen
+      if(d.isDead === false){
         return true;
       } else {
         return false;
       }
+    }).classed('dead', function(d){
+      if(d.isDead === false){
+        return false;
+      } else {
+        return true;
+      }
     });
-  console.log(enemyArray);
 
-  svg.selectAll('.dead').data(deadArray).transition().duration(1000).ease('bounce')
-    .attr('cy', function(d){ return d.y; });
+  //svg.selectAll('.dead').remove();
+
+  svg.selectAll('circle').filter('.dead').data(deadArray)
+    .transition().duration(750).ease('bounce')
+    .attr('cy', function(d){
+      d.y = settings.height - settings.enemyR;
+      return d.y;
+    });
+
+  //svg.selectAll('.dead').data(deadArray).transition().duration(1000).ease('bounce')
+    //.attr('cy', function(d){ return d.y; });
 }
 
 //----GLOBAL VARIABLES----
