@@ -93,23 +93,17 @@ var moveEnemies = function() {
   svg.selectAll('.enemy').filter('.alive').data(enemyArray)
      .transition().duration(settings.enemyMovementSpeed).ease('linear')
      .attr('cx', function(d, i){
-        //if(d.isDead === false){
           d.x = Math.floor(Math.random() * ((settings.width - settings.enemyR) - 50) + 50);
-        //}
           return d.x;
       })
      .attr('cy', function(d, i){
-        //if(d.isDead === false){
           d.y = Math.floor(Math.random() * ((settings.height - 100) - 50) + 50);
-        //}
           return d.y;
       })
      .tween('Set x & y properties', function(d, i){  //Run checkCollision at each step in the transition to register collisions while transitioning
         return function(t) {  //t is the percentage of the way through the transition
-          //if(d.isDead === false){
             d.x = d3.select(this).attr('cx');
             d.y = d3.select(this).attr('cy');
-          //}
      }
      });
 }
@@ -150,17 +144,12 @@ var killEnemies = function(){
       }
     });
 
-  //svg.selectAll('.dead').remove();
-
   svg.selectAll('circle').filter('.dead').data(deadArray)
     .transition().duration(750).ease('bounce')
     .attr('cy', function(d){
       d.y = settings.height - settings.enemyR;
       return d.y;
     });
-
-  //svg.selectAll('.dead').data(deadArray).transition().duration(1000).ease('bounce')
-    //.attr('cy', function(d){ return d.y; });
 }
 
 //----GLOBAL VARIABLES----
@@ -237,7 +226,7 @@ var moveBullets = function(targetX, targetY){
 
 var screenShake = function(d) {
   //if (playerDead === false){
-    gameScreen.transition().duration(50).style({
+  gameScreen.transition().duration(50).style({
       'top' : '7px',
       'left' : '7px'
     }).transition().duration(50).style({
@@ -253,17 +242,18 @@ var screenShake = function(d) {
       'top' : '7px',
       'left' : '7px'
     }).transition().duration(50).style({
-  'top' : '-7px',
+      'top' : '-7px',
       'left' : '-7px'
-    });
-    //Create explosion circle at bullet coordinates
-    var explosionCircle = svg.selectAll('.collisionCircle').data([1]).enter()
-      .append('circle').attr('class', '.collisionCircle')
-      .attr('cx', d.x).attr('cy', d.y)
-      .attr('r', settings.cannonR).attr('fill', 'red');
+  });
 
-    explosionCircle.transition().duration(350)
-      .style('opacity', 0).attr('r', 75).attr('fill', 'orange').remove();
+  //Create explosion circle at bullet coordinates
+  var explosionCircle = svg.selectAll('.collisionCircle').data([1]).enter()
+    .append('circle').attr('class', '.collisionCircle')
+    .attr('cx', d.x).attr('cy', d.y)
+    .attr('r', settings.cannonR).attr('fill', 'red');
+
+  explosionCircle.transition().duration(350)
+    .style('opacity', 0).attr('r', 75).attr('fill', 'orange').remove();
 }
 
 
