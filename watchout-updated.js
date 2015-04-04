@@ -100,7 +100,7 @@ var moveEnemies = function() {
           d.y = Math.floor(Math.random() * ((settings.height - 100) - 50) + 50);
           return d.y;
       })
-     .tween('Set x & y properties', function(d, i){  //Run checkCollision at each step in the transition to register collisions while transitioning
+     .tween('Set x & y properties', function(d, i){
         return function(t) {  //t is the percentage of the way through the transition
             d.x = d3.select(this).attr('cx');
             d.y = d3.select(this).attr('cy');
@@ -110,13 +110,15 @@ var moveEnemies = function() {
 
 var checkCollision = function(){
   //get distances between objects
+  var deadIndex = [];
+
   for (var i = 0; i < enemyArray.length; i++){
     var dx = currentBullet.x - enemyArray[i].x;
     var dy = currentBullet.y - enemyArray[i].y;
     var distance = Math.sqrt(dx * dx + dy * dy);
 
     //check if the objects are close enough to be touching
-    if (distance <= 45 + settings.enemyR){
+    if (distance <= 60 + settings.enemyR){
       //set all enemies within range to dead
       enemyArray[i].isDead = true;
       deadArray.push(enemyArray[i]);
@@ -150,6 +152,7 @@ var killEnemies = function(){
       d.y = settings.height - settings.enemyR;
       return d.y;
     });
+
 }
 
 //----GLOBAL VARIABLES----
@@ -212,15 +215,13 @@ var moveBullets = function(targetX, targetY){
     .attr("cy", targetY)
     .tween('Set x and y properties', function(d, i){
       return function(t){
-        d.x = d3.select(this).attr('cx');
-        d.y = d3.select(this).attr('cy');
+        currentBullet.x = d3.select(this).attr('cx');
+        currentBullet.y = d3.select(this).attr('cy');
       }
     })
     .remove().each('end', function(d, i){
-      if(i === bulletArray.length - 1){
         checkCollision();
         screenShake(d);
-      }
     });
 }
 
@@ -253,7 +254,10 @@ var screenShake = function(d) {
     .attr('r', settings.cannonR).attr('fill', 'red');
 
   explosionCircle.transition().duration(350)
-    .style('opacity', 0).attr('r', 75).attr('fill', 'orange').remove();
+    .style('opacity', 0).attr('r', 75).attr('fill', 'orange').remove()
+    .each('end', function(d){
+      bulletArray.pop();
+    });
 }
 
 
