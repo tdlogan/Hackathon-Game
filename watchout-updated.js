@@ -5,7 +5,6 @@
 var init = function() {
   //Reset the game elements
   d3.selectAll('svg').remove();
-  //Set scoreboard
 
   //Global game settings
   var settings = {
@@ -17,6 +16,7 @@ var init = function() {
     bulletRY: 14,               //Bullet is ellipse, RY is height of bullet
     numEnemies : 20,            //Number of enemies on screen
     enemyMovementSpeed: 1000,   //Time it takes enemies to move from their starting position to end in MS (lower is faster)
+    timeBetweenMoves: 1000,     //Time between each time the enemies move to a new location in ms
     explosionR: 75,             //Radius of bullet explosion
     statsWidth: 250,            //Width of stats box at end of level
     statsHeight: 200            //Height of stats box at end of level
@@ -43,8 +43,8 @@ var init = function() {
 
   //Loop through number of enemies and populate a new enemy at a random x and y coordinate
   var populateEnemies = function() {
-    var x;//random x
-    var y;//enemies start off the screen then drop in
+    var x;  //random x
+    var y;  //enemies start off the screen then drop in
 
     for (var i = 0; i < settings.numEnemies; i++){
       //Find random x and y coord to spawn enemy off the screen
@@ -244,7 +244,9 @@ var init = function() {
   }
 
   var showScore = function() {
-    var $score = $('.score').html(deadArray.length);
+    // Write score on scoreboard
+    $('.score').html(deadArray.length);
+    // Set high score on scoreboard
     var $highScore = $('.high-score');
     if($highScore.html() < deadArray.length){
       $highScore.html(deadArray.length);
@@ -259,12 +261,14 @@ var init = function() {
 
     showScore();
 
+    // Click to restart the game after bullet is fired
     d3.select('.gameSpace').on('click', function(d){
       //restart game
      $('.score').html(0);
       init();
     });
 
+    // Show a final score box on a delat after a shot is fired to display stats
     // setTimeout(function(){
     //   svg.selectAll('.stats').data([1]).enter()
     //     .append('rect').attr('class', '.stats')
@@ -289,20 +293,19 @@ var init = function() {
   var cannonArray = [];   //d3 accepts arrays as data arguments so push the player object into an array even though there is only one of them
   var bulletArray = [];   //Array to store the bullet for esasy manipulation with d3
   var deadArray = [];     //Push enemies that are dead into an array
-  var currentBullet;      //Maybe frivolous? The bullet that has been fired
+  var currentBullet;      //The bullet that has been fired
 
   //----MAIN GAME FUNCTION----
   var startGame = function() {
 
-    var mouseCoordinates = [0, 0];        //d3 coordinates are stored in an array, [x, y]
-    var timeBetweenEnemyMoves = 1000;     //Time between each time the enemies move to a new location in ms
     populateEnemies(settings.numEnemies); //Draw enemies on screen
     populateCannon();                     //Create the player and paint to screen
-    var player = cannonArray[0];          //Maybe frivolous?  Variable that is the player cannon object
+
+    var mouseCoordinates = [0, 0];        //d3 coordinates are stored in an array, [x, y]
     var canShoot = true;                  //State of whether cannon can be fired
 
-    //Move enemies every settings.timeBetweenEnemyMoves milliseconds
-    setInterval(function(){ moveEnemies(); }, timeBetweenEnemyMoves);
+    //Move enemies every settings.timeBetweenMoves milliseconds
+    setInterval(function(){ moveEnemies(); }, settings.timeBetweenMoves);
 
     //Fire bullet when user clicks
     d3.select('.gameSpace').on('click', function(d){
@@ -316,8 +319,6 @@ var init = function() {
         canShoot = false;
       }
     });
-
-    //d3.timer(function(){});
   }
 
   startGame();
