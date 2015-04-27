@@ -269,18 +269,28 @@ var init = function() {
     });
 
     // Show a final score box on a delat after a shot is fired to display stats
-    // setTimeout(function(){
-    //   svg.selectAll('.stats').data([1]).enter()
-    //     .append('rect').attr('class', '.stats')
-    //     .attr('x', '300')
-    //     .attr('y', '150')
-    //     .attr('width', settings.statsWidth)
-    //     .attr('height', settings.statsHeight)
-    //     .attr('fill', 'red')
-    //     .attr('opacity', 0)
-    //     .transition().duration(2500)
-    //     .attr('opacity', 100);
-    // }, 1000);
+    setTimeout(function(){
+      svg.selectAll('.stats').data([1]).enter()
+        .append('rect').attr('class', '.stats')
+        .attr('x', '300')
+        .attr('y', '150')
+        .attr('width', settings.statsWidth)
+        .attr('height', settings.statsHeight)
+        .attr('fill', 'red')
+        .attr('opacity', 0)
+        .transition().duration(2500)
+        .attr('opacity', 100);
+
+      svg.append('text').text('Click to play again')
+        .attr('x', 350)
+        .attr('y', 250)
+        .attr('fill', 'black')
+        .attr('font-family', 'Calibri')
+        .attr('font-size', 20)
+        .attr('opacity', 0)
+        .transition().duration(2500)
+        .attr('opacity', 100);
+    }, 1000);
   }
 
   //----GLOBAL VARIABLES----
